@@ -20,15 +20,13 @@ class Main:
         
         self.bullet_clock = 0
         self.enemy_direction = self.settings.enemy_direction
+        self.kills = 0
         self.fire = False
         
         self.player = Player(self)
         self.bullets = pygame.sprite.Group()
         self.enemys = pygame.sprite.Group()
-        self._create_enemys()
-
-        
-        
+        self._create_enemys()     
 
     def _check_ivents(self):
 
@@ -60,13 +58,13 @@ class Main:
             sys.exit()
 
     def _create_enemys(self):
-        for row_number in range(3):
-            for enemy_number in range(4):
+        for row_number in range(1):
+            for enemy_number in range(10):
                 self._create_enemy(enemy_number,row_number)
-            self.enemy_direction *= -1
+
 
     def _create_enemy(self,number,row):
-        position = (50*number +50, 80*row + 80)
+        position = (70*number + 50 , 120*row)
         enemy = Enemy(self,position)
         self.enemys.add(enemy)
                
@@ -82,13 +80,30 @@ class Main:
 
         for bullet in self.bullets.copy():
                 if bullet.rect.bottom <= 0:
-                    self.bullets.remove(bullet)   
+                    self.bullets.remove(bullet) 
 
+        self._check_enemy_kill()  
+    
+    def _check_enemy_kill(self):
+        collisions = pygame.sprite.groupcollide(self.bullets,self.enemys, True , True)
+        if collisions:
+            self.kills += 1
+            if self.kills // 5:
+                self.settings.enemy_speed_mult = self.settings.enemy_speed_mult*1,5
 
     def _update_enemys(self):
+
         for enemy in self.enemys.sprites():
             enemy.update()
-            
+            if enemy.rect.bottom <= self.screen.get_rect().bottom:
+                self.settings.player_lives -= 1
+
+        self._check_player_damage()
+
+    def _check_player_damage(self):
+        collisions = pygame.sprite.spritecollide(self.player,self.enemys, False)
+        if collisions:
+            self.settings.player_lives -= 1
         
     def _update_screen(self):
 
@@ -110,6 +125,9 @@ class Main:
             self._update_enemys()
 
             self._update_screen()
+
+            if self.settings.player_lives == 0:
+                sys.exit()
 
 if __name__ == "__main__":
 

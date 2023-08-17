@@ -10,7 +10,7 @@ class Bullet(Sprite):
         self.settings = game.settings
 
         self.speed = game.settings.bullet_speed
-
+        self.speed_mult = game.settings.bullet_speed_mult
         self.bullet_sprite = self.settings.bullet_image
         
         self.rect = self.bullet_sprite.get_rect()
