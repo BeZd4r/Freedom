@@ -1,5 +1,6 @@
 import sys
 import pygame
+from random import randint
 from Settings import Settings
 from Player import Player
 from Enemy import Enemy
@@ -19,7 +20,6 @@ class Main:
         self.screen_backgroud =self.settings.bg_image
         
         self.bullet_clock = 0
-        self.enemy_direction = self.settings.enemy_direction
         self.kills = 0
         self.fire = False
         
@@ -58,9 +58,10 @@ class Main:
             sys.exit()
 
     def _create_enemys(self):
-        for row_number in range(1):
+        for row_number in range(randint(1,2)):
             for enemy_number in range(10):
-                self._create_enemy(enemy_number,row_number)
+                if randint(0,1):
+                    self._create_enemy(enemy_number,row_number)
 
 
     def _create_enemy(self,number,row):
@@ -70,7 +71,7 @@ class Main:
                
     def _update_bullets(self):
         time = pygame.time.get_ticks()
-        if self.fire and  time - self.bullet_clock >= 750:
+        if self.fire and  time - self.bullet_clock >= 500:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
             self.bullet_clock = time
@@ -88,23 +89,29 @@ class Main:
         collisions = pygame.sprite.groupcollide(self.bullets,self.enemys, True , True)
         if collisions:
             self.kills += 1
-            if self.kills // 5:
-                self.settings.enemy_speed_mult = self.settings.enemy_speed_mult*1,5
+            if self.kills % 5 == 0:
+                self.settings.speed_mult *= 1.2
 
     def _update_enemys(self):
 
         for enemy in self.enemys.sprites():
             enemy.update()
-            if enemy.rect.bottom <= self.screen.get_rect().bottom:
+            if enemy.rect.bottom >= self.screen.get_rect().bottom:
                 self.settings.player_lives -= 1
+                self.enemys.remove(enemy)
 
         self._check_player_damage()
+        self._check_living_enemys()
 
     def _check_player_damage(self):
         collisions = pygame.sprite.spritecollide(self.player,self.enemys, False)
         if collisions:
             self.settings.player_lives -= 1
-        
+
+    def _check_living_enemys(self):
+        if len(self.enemys.sprites()) == 0:
+            self._create_enemys()
+
     def _update_screen(self):
 
         self.screen.blit(self.screen_backgroud,(0,0))
@@ -126,7 +133,7 @@ class Main:
 
             self._update_screen()
 
-            if self.settings.player_lives == 0:
+            if self.settings.player_lives <= 0:
                 sys.exit()
 
 if __name__ == "__main__":

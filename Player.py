@@ -14,6 +14,7 @@ class Player:
 
         self.x = float(self.rect.x)
         self.speed = self.settings.player_speed
+        self.speed_mult = self.settings.speed_mult
         self.mright = False
         self.mleft = False
 
@@ -23,10 +24,10 @@ class Player:
     def update(self):
 
         if self.mleft and self.rect.left > 0:
-            self.x -= self.speed
+            self.x -= self.speed*self.speed_mult
 
         elif self.mright and self.rect.right < self.screen_rect.right:
-            self.x += self.speed
+            self.x += self.speed*self.speed_mult
 
         self.rect.x = self.x
 

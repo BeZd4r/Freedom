@@ -13,15 +13,14 @@ class Settings:
 
         self.player_speed = 0.25
         self.bullet_speed = 0.15
-        self.bullet_speed_mult = 1.05
 
         self.enemy_move_speed = 0.05
         self.enemy_drop_speed = 0.15    
-        self.enemy_direction = 1
         self.enemy_strafe_y_range = 40
-        self.enemy_speed_mult = 1.1
+        self.speed_mult = float(1.1)
 
         self.player_lives = 3
+
         
 
  

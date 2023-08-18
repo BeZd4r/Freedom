@@ -1,3 +1,4 @@
+from random import choice
 from pygame.sprite import Sprite
 
 class Enemy(Sprite):
@@ -20,15 +21,12 @@ class Enemy(Sprite):
         
         self.speed_x = self.settings.enemy_move_speed
         self.speed_y = self.settings.enemy_drop_speed
-        self.directiom = self.settings.enemy_direction
+        self.directiom = choice([-1,1])
 
         self.strafe_y_flag = False
         self.strafe_y_range = self.settings.enemy_strafe_y_range
         self.strafe_range = self.strafe_y_range
-        self.speed_mult = self.settings.enemy_speed_mult
-
-        def mult(self):
-            pass
+        self.speed_mult = self.settings.speed_mult
 
     def _check_edges(self):
         if self.rect.x <= 0 or self.rect.right >= self.screen.get_rect().right:
@@ -36,8 +34,8 @@ class Enemy(Sprite):
     
     def strafe_y(self):
         if self.strafe_range > 0:    
-            self.y += self.speed_y
-            self.strafe_range -= self.speed_y
+            self.y += self.speed_y*self.speed_mult
+            self.strafe_range -= self.speed_y*self.speed_mult
 
             self.rect.y = self.y
         else:
@@ -50,11 +48,15 @@ class Enemy(Sprite):
     def move_x(self):
         self.x += self.speed_x * self.directiom * self.speed_mult
         self.rect.x = self.x
-            
+
+    def drop(self):
+        self.y += self.speed_y*self.speed_mult
+        self.rect.y = self.y        
 
     def update(self):
-
-        if self.strafe_y_flag:
+        if self.rect.bottom > self.settings.display_height - 200:
+            self.drop()
+        elif self.strafe_y_flag:
             self.strafe_y()
         else:
             self.move_x()
